@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOHASSEB Admin Cloud</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    :root{--bg:#0b1020;--bg2:#111936;--card:#131d35;--border:#22315a;--text:#e8eefc;--muted:#8fa0c8;--accent:#10b981;--accent2:#3b82f6;--warn:#f59e0b;--danger:#f43f5e;--radius:16px;--shadow:0 18px 50px rgba(0,0,0,.25);--font:'IBM Plex Sans Arabic',sans-serif}
+    *{box-sizing:border-box}body{margin:0;font-family:var(--font);background:linear-gradient(180deg,#0a0f1e,#0b1020);color:var(--text)}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}.sidebar{background:rgba(19,29,53,.92);border-left:1px solid var(--border);padding:18px;position:sticky;top:0;height:100vh}.brand{font-weight:700;font-size:20px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.sub{font-size:11px;color:var(--muted);margin-top:4px}.nav{margin-top:22px;display:flex;flex-direction:column;gap:6px}.nav button{all:unset;cursor:pointer;padding:11px 12px;border-radius:12px;color:var(--muted);font-size:14px}.nav button.on,.nav button:hover{background:rgba(16,185,129,.1);color:#fff;border:1px solid rgba(16,185,129,.18)}
+    .main{padding:22px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}.title{font-size:26px;font-weight:700}.muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:rgba(19,29,53,.92);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}.stat .v{font-size:30px;font-weight:700;margin-top:8px}.k{font-size:12px;color:var(--muted)}.two{display:grid;grid-template-columns:1.3fr .9fr;gap:14px;margin-top:14px}.hidden{display:none!important}
+    input,select,textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:11px 12px;font-family:inherit}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn{border:none;border-radius:12px;padding:10px 14px;font-family:inherit;font-weight:700;cursor:pointer}.btn-primary{background:linear-gradient(135deg,var(--accent),#059669);color:#fff}.btn-blue{background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.25)}.btn-red{background:rgba(244,63,94,.15);color:#fecdd3;border:1px solid rgba(244,63,94,.25)}.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}.btn-sm{padding:7px 10px;font-size:12px}
+    table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.06);text-align:right;vertical-align:top}th{color:var(--muted);font-weight:600;font-size:12px}.badge{display:inline-flex;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:700}.b-green{background:rgba(16,185,129,.15);color:#6ee7b7}.b-red{background:rgba(244,63,94,.15);color:#fda4af}.b-amber{background:rgba(245,158,11,.15);color:#fcd34d}.b-blue{background:rgba(59,130,246,.15);color:#93c5fd}
+    .stack{display:flex;flex-direction:column;gap:12px}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(110px);transition:.25s;background:#081120;border:1px solid var(--border);padding:12px 16px;border-radius:12px;z-index:9999}.toast.show{transform:translateX(-50%) translateY(0)}.section-title{font-size:16px;font-weight:700;margin-bottom:12px}pre{white-space:pre-wrap;background:#0b1326;border:1px solid var(--border);border-radius:12px;padding:12px;line-height:1.6;color:#c8d5f5;font-size:12px}.setup{max-width:900px;margin:24px auto}.small{font-size:12px}
+    @media (max-width:1000px){.layout{grid-template-columns:1fr}.sidebar{position:static;height:auto}.grid,.two,.row{grid-template-columns:1fr}.main{padding:14px}}
+  </style>
+</head>
+<body>
+<div id="setupScreen" class="setup hidden">
+  <div class="card">
+    <div class="title" style="font-size:24px">ربط لوحة الإدارة مع Supabase</div>
+    <p class="muted">هذا الملف هو الوحيد الذي تحتاج رفعه على Netlify. عند أول تشغيل، أدخل بيانات مشروع Supabase هنا وسيتم حفظها في المتصفح.</p>
+    <div class="row">
+      <div><label>Supabase Project URL</label><input id="cfgUrl" placeholder="https://xxxx.supabase.co"></div>
+      <div><label>Supabase anon key</label><input id="cfgKey" placeholder="eyJhbGciOi..." dir="ltr"></div>
+    </div>
+    <div style="margin-top:12px" class="toolbar">
+      <button class="btn btn-primary" onclick="saveCloudConfig()">حفظ والاتصال</button>
+      <button class="btn btn-ghost" onclick="toggleSql()">إظهار SQL المطلوب</button>
+    </div>
+    <div id="sqlWrap" class="hidden" style="margin-top:14px">
+      <div class="section-title">شغّل هذا SQL مرة واحدة داخل Supabase SQL Editor</div>
+      <pre id="sqlText"></pre>
+    </div>
+    <div style="margin-top:16px" class="small muted">مهم: لا أستطيع إدخال بيانات Supabase نيابة عنك لأن كل مشروع له URL و Key خاصان به.</div>
+  </div>
+</div>
+
+<div id="app" class="layout hidden">
+  <aside class="sidebar">
+    <div class="brand">محاسب برو</div>
+    <div class="sub">لوحة إدارة سحابية — ملف واحد لـ Netlify</div>
+    <div class="nav">
+      <button class="on" data-page="dashboard" onclick="goPage('dashboard',this)">📊 الرئيسية</button>
+      <button data-page="users" onclick="goPage('users',this)">👥 المستخدمون</button>
+      <button data-page="licenses" onclick="goPage('licenses',this)">🔑 التراخيص</button>
+      <button data-page="generate" onclick="goPage('generate',this)">➕ إنشاء ترخيص</button>
+      <button data-page="settings" onclick="goPage('settings',this)">⚙ الإعدادات</button>
+    </div>
+  </aside>
+  <main class="main">
+    <div id="page-dashboard">
+      <div class="top"><div><div class="title">لوحة التحكم</div><div class="muted" id="statusLine">—</div></div><div class="toolbar"><button class="btn btn-blue btn-sm" onclick="refreshAll()">تحديث</button><button class="btn btn-ghost btn-sm" onclick="goPage('generate', document.querySelector('[data-page=generate]'))">ترخيص جديد</button></div></div>
+      <div class="grid" id="statsGrid"></div>
+      <div class="two">
+        <div class="card"><div class="section-title">أحدث المستخدمين</div><div style="overflow:auto"><table><thead><tr><th>المحل</th><th>المستخدم</th><th>الجوال</th><th>الخطة</th></tr></thead><tbody id="latestUsers"></tbody></table></div></div>
+        <div class="card"><div class="section-title">الاشتراكات التي تنتهي قريبًا</div><div id="expiringList" class="stack"></div></div>
+      </div>
+    </div>
+    <div id="page-users" class="hidden"><div class="top"><div class="title">المستخدمون</div><div class="toolbar"><input id="searchUsers" placeholder="ابحث..." oninput="renderUsers()" style="min-width:220px"><button class="btn btn-blue btn-sm" onclick="refreshAll()">تحديث</button></div></div><div class="card"><div style="overflow:auto"><table><thead><tr><th>المحل</th><th>المستخدم</th><th>الجوال</th><th>الخطة</th><th>التسجيل</th><th>آخر دخول</th></tr></thead><tbody id="usersBody"></tbody></table></div></div></div>
+    <div id="page-licenses" class="hidden"><div class="top"><div class="title">التراخيص</div><div class="toolbar"><input id="searchLic" placeholder="ابحث..." oninput="renderLicenses()" style="min-width:220px"><button class="btn btn-blue btn-sm" onclick="refreshAll()">تحديث</button></div></div><div class="card"><div style="overflow:auto"><table><thead><tr><th>المحل</th><th>الخطة</th><th>العميل</th><th>الجوال</th><th>الانتهاء</th><th>المتبقي</th><th>المفتاح</th></tr></thead><tbody id="licensesBody"></tbody></table></div></div></div>
+    <div id="page-generate" class="hidden"><div class="top"><div class="title">إنشاء ترخيص جديد</div></div><div class="two"><div class="card"><div class="row"><div><label>اسم المحل</label><input id="gShop" placeholder="اسم المحل"></div><div><label>اسم العميل</label><input id="gClient" placeholder="اسم العميل"></div></div><div class="row"><div><label>رقم الجوال</label><input id="gPhone" placeholder="05xxxxxxxx" dir="ltr"></div><div><label>الخطة</label><select id="gPlan"><option value="basic">أساسي — سنة</option><option value="pro" selected>احترافي — سنة</option><option value="premium">مميز — سنتان</option><option value="lifetime">مدى الحياة</option></select></div></div><label>ملاحظات</label><textarea id="gNotes" rows="4" placeholder="اختياري"></textarea><div class="toolbar" style="margin-top:12px"><button class="btn btn-primary" onclick="generateLicense()">إنشاء الترخيص</button><button class="btn btn-blue" onclick="saveGeneratedLicense()">حفظ في السحابة</button></div></div><div class="card"><div class="section-title">النتيجة</div><div id="generatedWrap" class="hidden"><label>المفتاح</label><input id="gKey" readonly dir="ltr"><div class="row"><div><label>تنتهي في</label><input id="gExpiry" readonly></div><div><label>السعر</label><input id="gPrice" readonly></div></div><label>رسالة واتساب</label><textarea id="gMsg" rows="10"></textarea><div class="toolbar" style="margin-top:12px"><button class="btn btn-primary" onclick="copyField('gKey')">نسخ المفتاح</button><button class="btn btn-blue" onclick="copyField('gMsg')">نسخ الرسالة</button></div></div><div id="generatedEmpty" class="muted">أنشئ ترخيصًا وسيظهر هنا.</div></div></div></div>
+    <div id="page-settings" class="hidden"><div class="top"><div class="title">الإعدادات</div></div><div class="card"><div class="section-title">بيانات Supabase</div><div class="row"><div><label>URL</label><input id="setUrl"></div><div><label>Anon Key</label><input id="setKey" dir="ltr"></div></div><div class="toolbar" style="margin-top:12px"><button class="btn btn-primary" onclick="saveCloudConfigFromSettings()">حفظ</button><button class="btn btn-red" onclick="resetCloudConfig()">حذف الربط</button></div></div></div>
+  </main>
+</div>
+
+<script>
+const SQL_SCHEMA = `
+create extension if not exists pgcrypto;
+create table if not exists public.moh_accounts (
+  id uuid primary key default gen_random_uuid(),
+  uid text unique,
+  shop text,
+  username text,
+  phone text,
+  plan text default 'trial',
+  trial_start timestamptz default now(),
+  registered_at timestamptz default now(),
+  last_login timestamptz,
+  active boolean default true
+);
+create table if not exists public.moh_licenses (
+  id uuid primary key default gen_random_uuid(),
+  uid text,
+  shop_id text,
+  shop_name text,
+  client_name text,
+  client_phone text,
+  plan text,
+  plan_name text,
+  price numeric,
+  license_key text unique,
+  expiry date,
+  generated_date date default current_date,
+  notes text
+);
+alter table public.moh_accounts enable row level security;
+alter table public.moh_licenses enable row level security;
+drop policy if exists "accounts read write anon" on public.moh_accounts;
+create policy "accounts read write anon" on public.moh_accounts for all to anon, authenticated using (true) with check (true);
+drop policy if exists "licenses read write anon" on public.moh_licenses;
+create policy "licenses read write anon" on public.moh_licenses for all to anon, authenticated using (true) with check (true);
+grant all on public.moh_accounts to anon, authenticated;
+grant all on public.moh_licenses to anon, authenticated;
+grant usage on schema public to anon, authenticated;`;
+document.getElementById('sqlText').textContent = SQL_SCHEMA.trim();
+const HARD_CODED_CFG={url:'https://yatkcqrzcdkjtvbbqhso.supabase.co',anonKey:'sb_publishable_WpgRQxFE4irCLP1A10N3wg_D2VoFyGj'};
+const CLOUD_LS_KEY='mohasseb_admin_cloud_cfg_v1'; let supabase=null; let APP={accounts:[],licenses:[],generated:null};
+const LICENSE_ENGINE={SECRET:'MOHASSEB2024SECRET',PLANS:{basic:{name:'أساسي',days:365,price:199},pro:{name:'احترافي',days:365,price:349},premium:{name:'مميز',days:730,price:549},lifetime:{name:'مدى الحياة',days:36500,price:999}},_hash(str){let h=5381;for(let i=0;i<str.length;i++)h=(Math.imul(h,33)+str.charCodeAt(i))>>>0;return h.toString(16).toUpperCase().padStart(8,'0')},generate(shopId,plan){const pd=this.PLANS[plan];const endDate=new Date();endDate.setDate(endDate.getDate()+pd.days);let sid=(shopId||'SHOP').replace(/[^A-Za-z0-9]/g,'').toUpperCase().substring(0,8);if(!sid)sid='SHOP'+String(Date.now()).slice(-4);sid=sid.padEnd(8,'X').substring(0,8);const planPad=plan.toUpperCase().padEnd(8,'X').substring(0,8);const endFmt=endDate.toISOString().split('T')[0];const endStr=endFmt.replace(/-/g,'');const genStr=new Date().toISOString().split('T')[0].replace(/-/g,'');const checksum=this._hash(sid+'|'+plan+'|'+endFmt+'|'+this.SECRET);return{key:[sid,planPad,endStr,genStr,checksum].join('-'),expiry:endFmt,price:pd.price,planName:pd.name}}};
+function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add('show'),20);setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),250)},3000)}
+function toggleSql(){document.getElementById('sqlWrap').classList.toggle('hidden')} function cfgLoad(){try{const c=JSON.parse(localStorage.getItem(CLOUD_LS_KEY)||'null'); if(c&&c.url&&c.anonKey) return c;}catch(e){} return HARD_CODED_CFG} function cfgSave(cfg){localStorage.setItem(CLOUD_LS_KEY,JSON.stringify(cfg))} function resetCloudConfig(){localStorage.removeItem(CLOUD_LS_KEY);location.reload()}
+async function saveCloudConfig(){const url=document.getElementById('cfgUrl').value.trim();const anonKey=document.getElementById('cfgKey').value.trim();if(!url||!anonKey){showToast('أدخل URL و anon key');return}cfgSave({url,anonKey});await bootCloud()} async function saveCloudConfigFromSettings(){const url=document.getElementById('setUrl').value.trim();const anonKey=document.getElementById('setKey').value.trim();if(!url||!anonKey){showToast('أدخل URL و anon key');return}cfgSave({url,anonKey});await bootCloud()}
+async function bootCloud(){const cfg=cfgLoad();if(!cfg){document.getElementById('setupScreen').classList.remove('hidden');document.getElementById('app').classList.add('hidden');return}document.getElementById('cfgUrl').value=cfg.url||'';document.getElementById('cfgKey').value=cfg.anonKey||'';document.getElementById('setUrl').value=cfg.url||'';document.getElementById('setKey').value=cfg.anonKey||'';try{if(!window.supabase||!window.supabase.createClient){throw new Error('Supabase library failed to load')}supabase=window.supabase.createClient(cfg.url,cfg.anonKey);const {error}=await supabase.from('moh_accounts').select('id').limit(1);if(error&&/does not exist|relation/i.test(error.message||'')){showToast('الجداول غير موجودة. شغّل SQL أولًا داخل Supabase');document.getElementById('setupScreen').classList.remove('hidden');document.getElementById('app').classList.remove('hidden');return}if(error){throw new Error(error.message||'Connection test failed')}document.getElementById('setupScreen').classList.add('hidden');document.getElementById('app').classList.remove('hidden');await refreshAll();if(typeof goPage==='function'){const btn=document.querySelector('[data-page="users"]');goPage('users',btn);}showToast('تم الاتصال بـ Supabase بنجاح')}catch(e){console.error(e);alert('فشل الاتصال بـ Supabase:\n' + (e.message||e));showToast('فشل الاتصال بـ Supabase');document.getElementById('setupScreen').classList.remove('hidden');document.getElementById('app').classList.add('hidden')}}
+function goPage(page,btn){document.querySelectorAll('[id^="page-"]').forEach(x=>x.classList.add('hidden'));document.getElementById('page-'+page).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));if(btn)btn.classList.add('on')} function daysLeft(expiry){if(!expiry)return null;return Math.ceil((new Date(expiry+'T23:59:59')-new Date())/86400000)}
+async function refreshAll(){if(!supabase)return;const [{data:accounts,error:e1},{data:licenses,error:e2}]=await Promise.all([supabase.from('moh_accounts').select('*').order('registered_at',{ascending:false}),supabase.from('moh_licenses').select('*').order('generated_date',{ascending:false})]);if(e1){console.error(e1);showToast('تعذر قراءة accounts')}if(e2){console.error(e2);showToast('تعذر قراءة licenses')}APP.accounts=accounts||[];APP.licenses=licenses||[];renderDashboard();renderUsers();renderLicenses()}
+function renderDashboard(){const totalUsers=APP.accounts.length;const trialUsers=APP.accounts.filter(x=>(x.plan||'trial')==='trial').length;const activeLic=APP.licenses.filter(x=>(daysLeft(x.expiry)??-1)>=0).length;const totalRevenue=APP.licenses.reduce((a,b)=>a+Number(b.price||0),0);const expiring=APP.licenses.filter(x=>{const d=daysLeft(x.expiry);return d!==null&&d>=0&&d<=30}).sort((a,b)=>daysLeft(a.expiry)-daysLeft(b.expiry));document.getElementById('statusLine').textContent=`آخر تحديث: ${new Date().toLocaleString('ar-SA')}`;document.getElementById('statsGrid').innerHTML=`<div class="card stat"><div class="k">إجمالي المستخدمين</div><div class="v">${totalUsers}</div></div><div class="card stat"><div class="k">تجريبي</div><div class="v">${trialUsers}</div></div><div class="card stat"><div class="k">التراخيص النشطة</div><div class="v">${activeLic}</div></div><div class="card stat"><div class="k">الإيرادات</div><div class="v">${totalRevenue.toLocaleString()}</div></div>`;document.getElementById('latestUsers').innerHTML=APP.accounts.slice(0,8).map(u=>`<tr><td>${esc(u.shop||'—')}</td><td>${esc(u.username||'—')}</td><td dir="ltr">${esc(u.phone||'—')}</td><td><span class="badge ${u.plan==='trial'?'b-amber':'b-blue'}">${esc(u.plan||'trial')}</span></td></tr>`).join('')||`<tr><td colspan="4" class="muted">لا يوجد مستخدمون</td></tr>`;document.getElementById('expiringList').innerHTML=expiring.slice(0,6).map(l=>{const d=daysLeft(l.expiry);return `<div class="card" style="padding:12px"><div style="font-weight:700">${esc(l.shop_name||l.client_name||'—')}</div><div class="muted small">${esc(l.plan_name||l.plan||'')} — ${esc(l.expiry||'')}</div><div style="margin-top:8px"><span class="badge ${d<=7?'b-red':'b-amber'}">${d} يوم</span></div></div>`}).join('')||`<div class="muted">لا توجد اشتراكات تنتهي قريبًا</div>`}
+function renderUsers(){const q=(document.getElementById('searchUsers')?.value||'').toLowerCase();const rows=APP.accounts.filter(u=>`${u.shop||''} ${u.username||''} ${u.phone||''}`.toLowerCase().includes(q));document.getElementById('usersBody').innerHTML=rows.map(u=>`<tr><td>${esc(u.shop||'—')}</td><td>${esc(u.username||'—')}</td><td dir="ltr">${esc(u.phone||'—')}</td><td><span class="badge ${u.plan==='trial'?'b-amber':'b-blue'}">${esc(u.plan||'trial')}</span></td><td>${fmtDate(u.registered_at)}</td><td>${fmtDate(u.last_login)}</td></tr>`).join('')||`<tr><td colspan="6" class="muted">لا توجد بيانات</td></tr>`}
+function renderLicenses(){const q=(document.getElementById('searchLic')?.value||'').toLowerCase();const rows=APP.licenses.filter(l=>`${l.shop_name||''} ${l.client_name||''} ${l.client_phone||''} ${l.plan_name||''} ${l.license_key||''}`.toLowerCase().includes(q));document.getElementById('licensesBody').innerHTML=rows.map(l=>{const d=daysLeft(l.expiry);return `<tr><td>${esc(l.shop_name||'—')}</td><td><span class="badge b-blue">${esc(l.plan_name||l.plan||'')}</span></td><td>${esc(l.client_name||'—')}</td><td dir="ltr">${esc(l.client_phone||'—')}</td><td>${esc(l.expiry||'—')}</td><td><span class="badge ${d!==null&&d<0?'b-red':d!==null&&d<=30?'b-amber':'b-green'}">${d===null?'—':d+' يوم'}</span></td><td dir="ltr" class="small">${esc(l.license_key||'—')}</td></tr>`}).join('')||`<tr><td colspan="7" class="muted">لا توجد بيانات</td></tr>`}
+function generateLicense(){const shop=document.getElementById('gShop').value.trim();const client=document.getElementById('gClient').value.trim();const phone=document.getElementById('gPhone').value.trim();const plan=document.getElementById('gPlan').value;if(!shop||!phone){showToast('أدخل اسم المحل والجوال');return}const gen=LICENSE_ENGINE.generate(phone||shop,plan);APP.generated={uid:null,shop_id:(phone||shop),shop_name:shop,client_name:client||shop,client_phone:phone,plan,plan_name:gen.planName,price:gen.price,license_key:gen.key,expiry:gen.expiry,generated_date:new Date().toISOString().slice(0,10),notes:document.getElementById('gNotes').value.trim()};document.getElementById('generatedWrap').classList.remove('hidden');document.getElementById('generatedEmpty').classList.add('hidden');document.getElementById('gKey').value=APP.generated.license_key;document.getElementById('gExpiry').value=APP.generated.expiry;document.getElementById('gPrice').value=String(APP.generated.price);document.getElementById('gMsg').value=`🏪 محاسب برو — تفعيل الاشتراك\n\nأهلاً ${APP.generated.client_name} 👋\n\nالخطة: ${APP.generated.plan_name}\nينتهي في: ${APP.generated.expiry}\n\nمفتاح التفعيل:\n${APP.generated.license_key}\n\nأدخله داخل التطبيق من صفحة الإعدادات.`}
+async function saveGeneratedLicense(){if(!APP.generated){showToast('أنشئ ترخيصًا أولًا');return}if(!supabase){showToast('لا يوجد اتصال');return}const {error}=await supabase.from('moh_licenses').insert([APP.generated]);if(error){console.error(error);showToast('فشل حفظ الترخيص');return}showToast('تم حفظ الترخيص');await refreshAll()}
+function copyField(id){const el=document.getElementById(id);navigator.clipboard.writeText(el.value||'');showToast('تم النسخ')} function fmtDate(v){if(!v)return '—';try{return new Date(v).toLocaleString('ar-SA')}catch{return v}} function esc(v){return String(v).replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]))}
+bootCloud();
+</script>
+</body>
+</html>
