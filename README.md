@@ -1,2 +1,0 @@
-# mohasseb
-pos-system
